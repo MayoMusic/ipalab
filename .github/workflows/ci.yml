@@ -107,8 +107,19 @@ jobs:
         run: |
           python scripts/make_samples.py
           .\dist\ipalab.exe --version
+
           .\dist\ipalab.exe inspect samples\Reader.ipa --no-colour
+          if ($LASTEXITCODE -ne 0) { throw "inspect on a clean archive must exit 0" }
+
+          .\dist\ipalab.exe inspect samples\Reader.ipa --json
+          if ($LASTEXITCODE -ne 0) { throw "inspect --json must exit 0" }
+
+          # samples/Unsigned.ipa deliberately contains an unsigned binary, so
+          # a scan over the directory is expected to report exit code 1.
           .\dist\ipalab.exe scan samples --quiet --no-colour
+          if ($LASTEXITCODE -ne 1) { throw "scan must exit 1 when an error finding exists" }
+
+          Write-Output "smoke test passed"
       - uses: actions/upload-artifact@v7
         with:
           name: ipalab-windows-x64
