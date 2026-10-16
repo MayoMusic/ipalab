@@ -120,6 +120,10 @@ jobs:
           if ($LASTEXITCODE -ne 1) { throw "scan must exit 1 when an error finding exists" }
 
           Write-Output "smoke test passed"
+
+          # The runner's PowerShell wrapper re-raises $LASTEXITCODE at the end
+          # of the step, so the exit code must be set explicitly.
+          exit 0
       - uses: actions/upload-artifact@v7
         with:
           name: ipalab-windows-x64
