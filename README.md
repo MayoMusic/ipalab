@@ -26,23 +26,58 @@ IPA Lab to answer "why won't this build run?".
 ```bash
 pip install ipalab                 # core
 pip install "ipalab[certs]"        # + certificate subject extraction
+pip install "ipalab[gui]"          # + graphical interface (CustomTkinter)
 ```
 
 Python 3.9+. No required dependencies; the standard library covers everything
 except optional certificate reporting.
 
-### Windows executable
+## Graphical interface
 
-A standalone `ipalab.exe` is attached to every CI run — no Python installation
-needed. Download it from the **Actions** tab on any successful run
-(`Windows executable` job, artifact `ipalab-windows-x64`), or build it
-yourself:
+If you would rather not live in a terminal:
+
+```bash
+pip install "ipalab[gui]"
+ipalab gui          # or: ipalab-gui
+```
+
+- **Open IPA** inspects one archive; **Scan folder** audits every `.ipa`
+  beneath a directory and lists them in the sidebar.
+- Each archive in the sidebar is colour-coded by its worst finding —
+  red for an error, amber for a warning.
+- Four tabs: **Overview** (bundle metadata), **Entitlements** (the dictionary
+  lifted out of the provisioning profile), **Binary** (architectures, signing,
+  encryption) and **Findings** (every problem, worst first).
+- **Copy JSON** puts the full report for every loaded archive on the
+  clipboard, so it drops straight into a script or an issue.
+- Dark and light themes, `Ctrl+O` to open, `Ctrl+S` to scan.
+
+Inspection happens on a worker thread, so a large archive never freezes the
+window.
+
+### Windows executables
+
+Standalone builds with no Python installation needed are attached to every CI
+run — download them from the **Actions** tab (`Windows executable` job):
+
+| Artifact | What it is | Size |
+| --- | --- | --- |
+| `ipalab-windows-x64` | `ipalab.exe`, the command line tool | ~9.5 MB |
+| `ipalab-gui-windows-x64` | `ipalab-gui.exe`, the graphical app | ~13 MB |
+
+To build them yourself:
 
 ```powershell
-pip install -e ".[dev]" pyinstaller
+pip install -e ".[dev,gui]" pyinstaller
+
+# command line
 python -m PyInstaller --noconfirm --clean --onefile --console --name ipalab `
     --paths . --distpath dist --workpath build scripts\ipalab_entry.py
-.\dist\ipalab.exe scan .\samples
+
+# graphical
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name ipalab-gui `
+    --paths . --collect-all customtkinter --distpath dist --workpath build-gui `
+    scripts\gui_entry.py
 ```
 
 ## Usage

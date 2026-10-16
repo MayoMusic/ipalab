@@ -62,6 +62,11 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     scan.set_defaults(handler=_cmd_scan)
 
+    gui = subparsers.add_parser(
+        "gui", parents=[common], help="launch the graphical interface"
+    )
+    gui.set_defaults(handler=_cmd_gui)
+
     return parser
 
 
@@ -86,6 +91,12 @@ def _cmd_scan(args: argparse.Namespace) -> int:
         ]
     _emit(reports, as_json=args.json, colour=not args.no_colour)
     return _exit_code(reports)
+
+
+def _cmd_gui(_args: argparse.Namespace) -> int:
+    from .gui import main as gui_main
+
+    return gui_main()
 
 
 def _exit_code(reports: List[Report]) -> int:

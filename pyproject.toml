@@ -26,7 +26,11 @@ dependencies = []
 
 [project.optional-dependencies]
 certs = ["cryptography>=41"]
+gui = ["customtkinter>=5.2"]
 dev = ["pytest>=7", "ruff>=0.6"]
+
+[project.gui-scripts]
+ipalab-gui = "ipalab.gui:main"
 
 [project.urls]
 Homepage = "https://github.com/MayoMusic/ipalab"
