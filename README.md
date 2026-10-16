@@ -31,6 +31,20 @@ pip install "ipalab[certs]"        # + certificate subject extraction
 Python 3.9+. No required dependencies; the standard library covers everything
 except optional certificate reporting.
 
+### Windows executable
+
+A standalone `ipalab.exe` is attached to every CI run — no Python installation
+needed. Download it from the **Actions** tab on any successful run
+(`Windows executable` job, artifact `ipalab-windows-x64`), or build it
+yourself:
+
+```powershell
+pip install -e ".[dev]" pyinstaller
+python -m PyInstaller --noconfirm --clean --onefile --console --name ipalab `
+    --paths . --distpath dist --workpath build scripts\ipalab_entry.py
+.\dist\ipalab.exe scan .\samples
+```
+
 ## Usage
 
 Inspect one or more archives:

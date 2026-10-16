@@ -87,6 +87,34 @@ jobs:
           path: dist/
           retention-days: 30
 
+  windows-exe:
+    name: Windows executable
+    needs: [lint, test]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" pyinstaller
+      - name: Build standalone executable
+        run: |
+          python -m PyInstaller --noconfirm --clean --onefile --console --name ipalab --paths . --exclude-module pytest --exclude-module ruff --distpath dist --workpath build scripts/ipalab_entry.py
+      - name: Smoke test the executable
+        run: |
+          python scripts/make_samples.py
+          .\dist\ipalab.exe --version
+          .\dist\ipalab.exe inspect samples\Reader.ipa --no-colour
+          .\dist\ipalab.exe scan samples --quiet --no-colour
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ipalab-windows-x64
+          path: dist/ipalab.exe
+          retention-days: 30
+
   publish:
     name: Publish to PyPI
     needs: [build]
